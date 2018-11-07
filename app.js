@@ -1,73 +1,102 @@
+'use-strict';
 var productsArray=[];
-
-  function product(name, src, count, shown){
+var currentlyDisplayed = [];
+var futureDisplayed = [];
+var countArray =[];
+var names=['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
+  function product(name, src, count, views){
       this.name = name;
 			this.src = src;
 			this.count = count;
-			this.shown = shown;
-     
-      productsArray.push(this);
+			this.views = views;
   }
 function generateRandomSource() {
 	var randNum = Math.floor(Math.random() * 19);
-	while(productsArray[randNum]['shown']) {
+	while(futureDisplayed.includes(randNum) || currentlyDisplayed.includes(randNum) ) {
 		randNum = Math.floor(Math.random() * 19);
 	}
-	productsArray[randNum]['shown'] = true;
-	return productsArray[randNum]['src'];
+	productsArray[randNum]['views']++;
+	futureDisplayed.push(randNum);
+	console.log('current', currentlyDisplayed);
+	console.log('future', futureDisplayed);
+	return {src: productsArray[randNum].src, id: randNum};
 }
 
- new product('bag','bag.jpg', 0, false);
- new product('banana','banana.jpg', 0, false);
- new product('bathroom','bathroom.jpg', 0, false);
- new product('boots','boots.jpg', 0, false);
- new product('breakfast','breakfast.jpg', 0, false);
- new product('bubblegum','bubblegum.jpg', 0, false);
- new product('chair','chair.jpg', 0, false);
- new product('cthulhu','cthulhu.jpg', 0, false);
- new product('dog-duck','dog-duck.jpg', 0, false);
- new product('dragon','dragon.jpg', 0, false);
- new product('pen','pen.jpg', 0, false);
- new product('pet-sweep','pet-sweep.jpg', 0, false);
- new product('scissors','scissors.jpg', 0, false);
- new product('bag','bag.jpg', 0, false);
- new product('shark','shark.jpg', 0, false);
- new product('sweep','sweep.png', 0, false);
- new product('tauntaun','tauntaun.jpg', 0, false);
- new product('unicorn','unicorn.jpg', 0, false);
- new product('usb','usb.gif', 0, false);
- new product('water-can','water-can.jpg', 0, false);
- new product('wine-glass','wine-glass.jpg', 0, false);
+function createNewProduct(){
+	for(var i= 0; i < 20; i++){
+		productsArray.push(new product(names[i],(names[i] + '.jpg'), 0, 0));
+	}
+}
+createNewProduct();
 
 function generateRandomPicture(){
+  var randomImage = generateRandomSource();
 	var mainContent = document.getElementById('main-content');
 	var  imgEl = document.createElement('img');
 	imgEl.classList.add('image');
+	imgEl.dataset.index = randomImage.id;
 	var divOne = document.createElement('div');
-	imgEl.src = generateRandomSource();
+	imgEl.src = randomImage.src;
 	divOne.appendChild(imgEl);
 	mainContent.appendChild(divOne);
 }
-function changeToFalse(){
-	for(var i = 0; i < productsArray.length; i++){
-		productsArray[i]['shown'] = false;
+
+var turnCounter = 0;
+
+function genereateInitialPictues(){
+	var imageOne = generateRandomPicture();
+	var imageTwo = generateRandomPicture();
+	var imageThree = generateRandomPicture();
+	currentlyDisplayed = futureDisplayed;
+	futureDisplayed = [];
+}	
+function fillCountArray(){
+	for(var i = 0; i < 20; i++){
+		countArray[i] = productsArray[i].count;
 	}
 }
-generateRandomPicture();
-generateRandomPicture();
-generateRandomPicture();
 
 document.addEventListener('DOMContentLoaded', function() {
+	genereateInitialPictues();
 	document.addEventListener('click', function(e){
-		if(e.target.classList.contains('image')){
-			changeToFalse();
+		if(e.target.classList.contains('image') && turnCounter < 25){
+			e.target.dataset.index;
+			productsArray[e.target.dataset.index].count++;
+			console.log('count',productsArray[e.target.dataset.index].count)
+			console.log('index', e.target.dataset.index);
+			turnCounter++;
+			console.log('turncounter',turnCounter);
 			var images = document.getElementsByTagName('img');
 			for(var i = 0; i < images.length; i++){
-				images[i].src = generateRandomSource();
+				var randomImage = generateRandomSource();
+				images[i].src = randomImage.src;
+				images[i].dataset.index = randomImage.id;
 			}	
-		}
-		else{
-			alert("Click on the damn image.");
+			currentlyDisplayed = futureDisplayed;
+			futureDisplayed = [];
+			fillCountArray();
 		}
 	});
+	
+	var ctx = document.getElementById('myChart').getContext('2d');
+	var chart = new Chart(ctx, {
+			// The type of chart we want to create
+			type: 'bar',
+
+			// The data for our dataset
+			data: {
+					labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
+					datasets: [{
+							label: "Count",
+							backgroundColor: 'rgb(25, 199, 132)',
+							borderColor: 'rgb(255, 99, 132)',
+							data: countArray,
+					}]
+			},
+
+			// Configuration options go here
+			options: {}
+	});
 });
+
+
