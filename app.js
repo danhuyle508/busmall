@@ -4,12 +4,13 @@ var currentlyDisplayed = [];
 var futureDisplayed = [];
 var countArray =[];
 var names=['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
-  function product(name, src, count, views){
-      this.name = name;
-			this.src = src;
-			this.count = count;
-			this.views = views;
-  }
+function product(name, src, count, views){
+		this.name = name;
+		this.src = src;
+		this.count = count;
+		this.views = views;
+}
+
 function generateRandomSource() {
 	var randNum = Math.floor(Math.random() * 19);
 	while(futureDisplayed.includes(randNum) || currentlyDisplayed.includes(randNum) ) {
@@ -75,28 +76,40 @@ document.addEventListener('DOMContentLoaded', function() {
 			currentlyDisplayed = futureDisplayed;
 			futureDisplayed = [];
 			fillCountArray();
-		}
-	});
-	
-	var ctx = document.getElementById('myChart').getContext('2d');
-	var chart = new Chart(ctx, {
-			// The type of chart we want to create
+			var ctx = document.getElementById('myChart').getContext('2d');
+			var chart = new Chart(ctx, {
 			type: 'bar',
-
-			// The data for our dataset
 			data: {
-					labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
-					datasets: [{
-							label: "Count",
-							backgroundColor: 'rgb(25, 199, 132)',
-							borderColor: 'rgb(255, 99, 132)',
-							data: countArray,
-					}]
-			},
-
-			// Configuration options go here
-			options: {}
+				labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
+				datasets: [{
+						label: "Count",
+						backgroundColor: 'rgb(25, 199, 132)',
+						borderColor: 'rgb(255, 99, 132)',
+						data: countArray,
+				}]
+				},
+				options: {}
+			});
+		}
+		else{
+			document.getElementById('reset').addEventListener('click',function(){
+				turnCounter = 0;
+				window.location.reload();
+			});
+		}	
 	});
 });
-
-
+var ctx = document.getElementById('myChart').getContext('2d');
+			var chart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
+				datasets: [{
+						label: "Count",
+						backgroundColor: 'rgb(25, 199, 132)',
+						borderColor: 'rgb(255, 99, 132)',
+						data: countArray,
+				}]
+				},
+				options: {}
+			});
