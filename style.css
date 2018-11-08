@@ -2,3 +2,7 @@ img{
     height: 150px;
     display: inline-block;
 }
+.chart {
+    height: 600px;
+    width: 80%;
+}

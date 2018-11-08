@@ -2,7 +2,8 @@
 var productsArray=[];
 var currentlyDisplayed = [];
 var futureDisplayed = [];
-var countArray =[];
+var countArray =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
 var names=['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
 function product(name, src, count, views){
 		this.name = name;
@@ -25,7 +26,7 @@ function generateRandomSource() {
 
 function createNewProduct(){
 	for(var i= 0; i < 20; i++){
-		productsArray.push(new product(names[i],(names[i] + '.jpg'), 0, 0));
+		productsArray.push(new product(names[i],('assets/' + names[i] + '.jpg'), 0, 0));
 	}
 }
 createNewProduct();
@@ -36,80 +37,67 @@ function generateRandomPicture(){
 	var  imgEl = document.createElement('img');
 	imgEl.classList.add('image');
 	imgEl.dataset.index = randomImage.id;
-	var divOne = document.createElement('div');
 	imgEl.src = randomImage.src;
-	divOne.appendChild(imgEl);
-	mainContent.appendChild(divOne);
+	mainContent.appendChild(imgEl);
 }
 
 var turnCounter = 0;
 
 function genereateInitialPictues(){
-	var imageOne = generateRandomPicture();
-	var imageTwo = generateRandomPicture();
-	var imageThree = generateRandomPicture();
+	generateRandomPicture();
+	generateRandomPicture();
+	generateRandomPicture();
 	currentlyDisplayed = futureDisplayed;
 	futureDisplayed = [];
 }	
 function fillCountArray(){
 	for(var i = 0; i < 20; i++){
-		countArray[i] = productsArray[i].count;
+		console.log('products array count', productsArray[i].count);
+		countArray[i] += productsArray[i].count;
 	}
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+	countArray = JSON.parse(localStorage.getItem("count")) || countArray;
 	genereateInitialPictues();
+	var storeCount = [];
 	document.addEventListener('click', function(e){
 		if(e.target.classList.contains('image') && turnCounter < 25){
-			e.target.dataset.index;
 			productsArray[e.target.dataset.index].count++;
-			console.log('count',productsArray[e.target.dataset.index].count)
-			console.log('index', e.target.dataset.index);
+			countArray[e.target.dataset.index]++;
 			turnCounter++;
-			console.log('turncounter',turnCounter);
 			var images = document.getElementsByTagName('img');
 			for(var i = 0; i < images.length; i++){
 				var randomImage = generateRandomSource();
 				images[i].src = randomImage.src;
 				images[i].dataset.index = randomImage.id;
-			}	
+
+			}
+			localStorage.setItem("count", JSON.stringify(countArray));
+
 			currentlyDisplayed = futureDisplayed;
 			futureDisplayed = [];
-			fillCountArray();
-			var ctx = document.getElementById('myChart').getContext('2d');
-			var chart = new Chart(ctx, {
-			type: 'bar',
-			data: {
-				labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
-				datasets: [{
-						label: "Count",
-						backgroundColor: 'rgb(25, 199, 132)',
-						borderColor: 'rgb(255, 99, 132)',
-						data: countArray,
-				}]
-				},
-				options: {}
-			});
+			createChart();
 		}
-		else{
-			document.getElementById('reset').addEventListener('click',function(){
-				turnCounter = 0;
-				window.location.reload();
-			});
-		}	
+	});
+	document.getElementById('reset').addEventListener('click',function(){
+		window.location.reload();
 	});
 });
-var ctx = document.getElementById('myChart').getContext('2d');
-			var chart = new Chart(ctx, {
-			type: 'bar',
-			data: {
-				labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
-				datasets: [{
-						label: "Count",
-						backgroundColor: 'rgb(25, 199, 132)',
-						borderColor: 'rgb(255, 99, 132)',
-						data: countArray,
-				}]
-				},
-				options: {}
-			});
+createChart();
+function createChart(){
+	var ctx = document.getElementById('myChart').getContext('2d');
+		var chart = new Chart(ctx, {
+		type: 'horizontalBar',
+		data: {
+			labels: ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'],
+			datasets: [{
+					label: "Count",
+					backgroundColor: 'rgb(25, 199, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					data: countArray,
+			}]
+			},
+			options: {}
+		});
+	}		
